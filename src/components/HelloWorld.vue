@@ -1,11 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 
 defineProps<{
   msg: string
 }>();
+
+interface CountryInfo {
+  liveExchangerates: number;
+  avgExchangerates: number;
+  perExchangerate: number;
+  crimeIndex: number;
+  safetyIndex: number,
+}
 
 let bucket = ref(0);
 let safetyLevel = ref(0);
@@ -15,9 +23,63 @@ const toast = () => {
   ElMessage.success('Hello')
 }
 
-function onSubmit() {
-  console.log('submit!')
+const countrys = [
+  'South Africa',
+  'Sweden',
+  'United Kingdom',
+  'Japan',
+  'Indonesia',
+  'Australia',
+  'Malaysia',
+  'Euro Zone',
+  'Canada',
+  'Vietnam',
+  'USA',
+  'Hong Kong',
+  'New Zealand',
+  'Korea',
+  'Philippines',
+  'Thailand',
+  'Singapore',
+  'China',
+  'Switzerland',
+];
+
+let infos: { [k: string]: CountryInfo } = {};
+
+async function getInfo(country: string) {
+  const params = new URLSearchParams({ country });
+  const url = '/api';
+  const resp = await fetch(`${url}?${params.toString()}`);
+  if (resp.status != 200) {
+    console.log('Query failed');
+    return null;
+  }
+  const info: CountryInfo = await resp.json();
+  return info;
 }
+
+async function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+onMounted(async () => {
+  let ready = true;
+  do {
+    const promise: [string, CountryInfo | null][] = await Promise.all(
+      countrys.map(async (c) => [c, await getInfo(c)])
+    );
+    for (const [c, info] of promise) {
+      if (info === null) {
+        ready = false;
+        continue;
+      }
+      infos[c] = info;
+    }
+    await sleep(5);
+  } while (!ready);
+  console.log('Fectch done.');
+});
 </script>
 
 <template>
@@ -31,25 +93,24 @@ function onSubmit() {
         <el-row :gutter="24">
           <div class="m-2 flex-row">
             <span class="<md:block w-30 align-middle">旅費（新臺幣）</span>
-            <el-input class="w-40 mx-2" v-model="bucket"></el-input>
+            <el-input class="w-20 mx-2" v-model="bucket"></el-input>
           </div>
           <div class="m-2 flex-row">
             <span class="<md:block w-10 align-middle">地區</span>
-            <el-select class="w-40 mx-2" v-model="region" placeholder="請選擇你希望旅遊的區域">
-              <el-option label="Zone one" value="shanghai"></el-option>
-              <el-option label="Zone two" value="beijing"></el-option>
+            <el-select class="w-55 mx-2" v-model="region" placeholder="請選擇你希望旅遊的區域">
+              <el-option v-for="country in countrys" :label="country" :value="country"></el-option>
             </el-select>
           </div>
           <div class="m-2 flex-row">
             <span class="<md:block w-30 md:ml-3 mr-6 text-left">治安等級大於 {{ safetyLevel }}</span>
-            <el-slider class="w-50 inline-flex align-middle" v-model="safetyLevel"></el-slider>
+            <el-slider class="w-40 inline-flex align-middle" v-model="safetyLevel"></el-slider>
           </div>
           <el-button
             style="block-size: fit-content"
             class="m-2"
             :icon="Search"
             type="success"
-            @click="onSubmit"
+            @click="getInfo('Taiwan')"
           >搜尋</el-button>
         </el-row>
       </el-card>

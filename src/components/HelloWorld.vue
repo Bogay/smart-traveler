@@ -7,19 +7,9 @@ defineProps<{
   msg: string
 }>();
 
-let form = {
-  name: '',
-  region: '',
-  date1: '',
-  date2: '',
-  delivery: false,
-  type: [],
-  resource: '',
-  desc: '',
-};
-
-const count = ref(0);
-const input = ref("element-plus");
+let bucket = ref(0);
+let safetyLevel = ref(0);
+let region = ref('');
 
 const toast = () => {
   ElMessage.success('Hello')
@@ -31,55 +21,38 @@ function onSubmit() {
 </script>
 
 <template>
-  <el-container>
-    <el-header>Header</el-header>
+  <el-container class="p-12">
+    <el-header
+      style="block-size: fit-content"
+      class="md:m-auto lg:m-3 text-left text-5xl <md:text-4xl"
+    >Smart Traveler</el-header>
     <el-main>
-      <el-card>
-        <template #header>
-          <div>test test</div>
-        </template>
-        <el-form ref="form" :model="form" label-width="120px">
-          <el-row>
-            <el-col :span="4">
-              <el-form-item label="旅費（新臺幣）">
-                <el-input v-model="form.name"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="地區">
-                <el-select v-model="form.region" placeholder="please select your zone">
-                  <el-option label="Zone one" value="shanghai"></el-option>
-                  <el-option label="Zone two" value="beijing"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="Activity form">
-                <el-slider></el-slider>
-              </el-form-item>
-            </el-col>
-            <el-col :span="2">
-              <el-form-item>
-                <el-button :icon="Search" type="success" @click="onSubmit">搜尋</el-button>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
+      <el-card class="lg:mx-12 lg:px-6 px-3">
+        <el-row :gutter="24">
+          <div class="m-2 flex-row">
+            <span class="<md:block w-30 align-middle">旅費（新臺幣）</span>
+            <el-input class="w-40 mx-2" v-model="bucket"></el-input>
+          </div>
+          <div class="m-2 flex-row">
+            <span class="<md:block w-10 align-middle">地區</span>
+            <el-select class="w-40 mx-2" v-model="region" placeholder="請選擇你希望旅遊的區域">
+              <el-option label="Zone one" value="shanghai"></el-option>
+              <el-option label="Zone two" value="beijing"></el-option>
+            </el-select>
+          </div>
+          <div class="m-2 flex-row">
+            <span class="<md:block w-30 md:ml-3 mr-6 text-left">治安等級大於 {{ safetyLevel }}</span>
+            <el-slider class="w-50 inline-flex align-middle" v-model="safetyLevel"></el-slider>
+          </div>
+          <el-button
+            style="block-size: fit-content"
+            class="m-2"
+            :icon="Search"
+            type="success"
+            @click="onSubmit"
+          >搜尋</el-button>
+        </el-row>
       </el-card>
     </el-main>
-    <el-footer>
-      <p>
-        Full Example:
-        <a
-          href="https://github.com/element-plus/element-plus-vite-starter"
-          target="_blank"
-        >element-plus-vite-starter</a>
-        | On demand Example:
-        <a
-          href="https://github.com/element-plus/unplugin-element-plus"
-          target="_blank"
-        >unplugin-element-plus/examples/vite</a>
-      </p>
-    </el-footer>
   </el-container>
 </template>

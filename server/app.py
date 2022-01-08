@@ -1,5 +1,6 @@
 from crawl import process_data, country_data
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
@@ -10,6 +11,7 @@ scheduler.add_job(process_data, intervalTrigger, id='crawl')
 scheduler.start()
 
 app = Flask(__name__)
+CORS(app)
 
 
 # Register `GET /`

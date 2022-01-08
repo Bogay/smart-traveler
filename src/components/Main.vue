@@ -78,7 +78,7 @@ let infos: { [k: string]: CountryInfo } = reactive({});
 // Get country info by country name
 async function getInfo(country: string): Promise<CountryInfo | null> {
   const params = new URLSearchParams({ country });
-  const url = '/api';
+  const url = 'https://smart-traveler.herokuapp.com/';
   const resp = await fetch(`${url}?${params.toString()}`);
   if (resp.status != 200) {
     console.log('Query failed');

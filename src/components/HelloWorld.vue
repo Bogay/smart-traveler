@@ -16,7 +16,7 @@ interface CountryInfo {
 }
 
 let bucket = ref(0);
-let safetyLevel = ref(0);
+let requiredSafetyIndex = ref(0);
 let region = ref('');
 
 const toast = () => {
@@ -44,6 +44,39 @@ const countrys = [
   'China',
   'Switzerland',
 ];
+const contients = {
+  'Asia': [
+    'Philippines',
+    'Korea',
+    'Hong Kong',
+    'Vietnam',
+    'Japan',
+    'Indonesia',
+    'Thailand',
+    'Singapore',
+    'China',
+    'Malaysia',
+  ],
+  'Africa': [
+    'South Africa',
+  ],
+  'Europe': [
+    'Sweden',
+    'United Kingdom',
+    'Euro Zone',
+    'Switzerland',
+  ],
+  'North America': [
+    'Canada',
+    'USA',
+  ],
+  'South America': [],
+  'Oceania': [
+    'Australia',
+    'New Zealand',
+  ],
+  'Antarctica': [],
+};
 
 let infos: { [k: string]: CountryInfo } = reactive({});
 
@@ -81,8 +114,13 @@ onMounted(async () => {
   console.log('Fectch done.');
 });
 
+function shouldDisplay(info: CountryInfo & { country: string }) {
+  return (info.safetyIndex >= requiredSafetyIndex.value)
+    && (region.value === '' || contients[region.value].indexOf(info.country) !== -1)
+}
+
 const infoTable = computed(() => Object.entries(infos).map(([c, info]) => ({ country: c, ...info })));
-const filteredInfoTable = computed(() => infoTable.value.filter(info => info.safetyIndex >= safetyLevel.value));
+const filteredInfoTable = computed(() => infoTable.value.filter(shouldDisplay));
 </script>
 
 <template>
@@ -96,13 +134,17 @@ const filteredInfoTable = computed(() => infoTable.value.filter(info => info.saf
         <el-row :gutter="24">
           <div class="m-2 flex-row">
             <span class="<md:block w-10 align-middle">地區</span>
-            <el-select class="w-55 mx-2" v-model="region" placeholder="請選擇你希望旅遊的區域">
-              <el-option v-for="country in countrys" :label="country" :value="country"></el-option>
+            <el-select clearable class="w-55 mx-2" v-model="region" placeholder="請選擇你希望旅遊的區域">
+              <el-option
+                v-for="contient in Object.keys(contients)"
+                :label="contient"
+                :value="contient"
+              ></el-option>
             </el-select>
           </div>
           <div class="m-2 flex-row">
-            <span class="<md:block w-30 md:ml-3 mr-6 text-left">治安等級大於 {{ safetyLevel }}</span>
-            <el-slider class="w-40 inline-flex align-middle" v-model="safetyLevel"></el-slider>
+            <span class="<md:block w-30 md:ml-3 mr-6 text-left">治安等級大於 {{ requiredSafetyIndex }}</span>
+            <el-slider class="w-40 inline-flex align-middle" v-model="requiredSafetyIndex"></el-slider>
           </div>
           <div class="lg:flex-grow <lg:w-full"></div>
           <el-button style="block-size: fit-content" class="m-2" :icon="Search" type="success">搜尋</el-button>

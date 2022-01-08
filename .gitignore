@@ -1,5 +1,4 @@
 node_modules
-.DS_Store
 dist
 dist-ssr
 *.local
@@ -10,3 +9,6 @@ package-lock.json
 pnpm-lock.yaml
 
 *.log
+
+.venv/
+__pycache__/

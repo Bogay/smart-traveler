@@ -44,7 +44,7 @@ const countrys = [
   'China',
   'Switzerland',
 ];
-const contients = {
+const contients: { [k: string]: string[] } = {
   'Asia': [
     'Philippines',
     'Korea',
@@ -115,8 +115,12 @@ onMounted(async () => {
 });
 
 function shouldDisplay(info: CountryInfo & { country: string }) {
+  let countries = contients[region.value];
+  if (!countries) {
+    return false;
+  }
   return (info.safetyIndex >= requiredSafetyIndex.value)
-    && (region.value === '' || contients[region.value].indexOf(info.country) !== -1)
+    && (region.value === '' || countries.indexOf(info.country) !== -1)
 }
 
 const infoTable = computed(() => Object.entries(infos).map(([c, info]) => ({ country: c, ...info })));

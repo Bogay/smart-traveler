@@ -98,10 +98,6 @@ function debug() {
       <el-card class="lg:mx-12 lg:px-6 px-3">
         <el-row :gutter="24">
           <div class="m-2 flex-row">
-            <span class="<md:block w-30 align-middle">旅費（新臺幣）</span>
-            <el-input class="w-20 mx-2" v-model="bucket"></el-input>
-          </div>
-          <div class="m-2 flex-row">
             <span class="<md:block w-10 align-middle">地區</span>
             <el-select class="w-55 mx-2" v-model="region" placeholder="請選擇你希望旅遊的區域">
               <el-option v-for="country in countrys" :label="country" :value="country"></el-option>
@@ -120,9 +116,18 @@ function debug() {
           >搜尋</el-button>
         </el-row>
         <el-table :data="infoTable" style="width: 100%">
-          <el-table-column prop="country" label="Date" width="180" />
-          <el-table-column prop="liveExchangerates" label="Name" width="180" />
-          <el-table-column prop="avgExchangerates" label="Address" />
+          <el-table-column prop="country" label="國家 / 地區" />
+          <el-table-column prop="liveExchangerates" label="即時匯率" />
+          <el-table-column prop="avgExchangerates" label="平均匯率" />
+          <el-table-column label="匯率漲跌幅">
+            <template #default="scope">{{ scope.row.perExchangerate }} %</template>
+          </el-table-column>
+          <el-table-column label="安全指數">
+            <template #default="scope">{{ scope.row.safetyIndex || 'N/A' }}</template>
+          </el-table-column>
+          <el-table-column label="犯罪指數">
+            <template #default="scope">{{ scope.row.crimeIndex || 'N/A' }}</template>
+          </el-table-column>
         </el-table>
       </el-card>
     </el-main>

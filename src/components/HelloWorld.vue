@@ -147,7 +147,6 @@ const filteredInfoTable = computed(() => infoTable.value.filter(shouldDisplay));
             <el-slider class="w-40 inline-flex align-middle" v-model="requiredSafetyIndex"></el-slider>
           </div>
           <div class="lg:flex-grow <lg:w-full"></div>
-          <el-button style="block-size: fit-content" class="m-2" :icon="Search" type="success">搜尋</el-button>
         </el-row>
         <el-table :data="filteredInfoTable" style="width: 100%">
           <el-table-column prop="country" label="國家 / 地區" />

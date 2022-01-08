@@ -75,7 +75,8 @@ const contients: { [k: string]: string[] } = {
 
 let infos: { [k: string]: CountryInfo } = reactive({});
 
-async function getInfo(country: string) {
+// Get country info by country name
+async function getInfo(country: string): Promise<CountryInfo | null> {
   const params = new URLSearchParams({ country });
   const url = '/api';
   const resp = await fetch(`${url}?${params.toString()}`);
@@ -91,6 +92,7 @@ async function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Get all of country info on component mounted
 onMounted(async () => {
   let ready = true;
   do {
@@ -104,11 +106,13 @@ onMounted(async () => {
       }
       infos[c] = info;
     }
+    // Retry after 5 sec.
     await sleep(5000);
   } while (!ready);
   toast('Fectch done.');
 });
 
+// Check whether a country info should be displayed on table
 function shouldDisplay(info: CountryInfo & { country: string }) {
   let countries = contients[region.value];
   return (info.safetyIndex >= requiredSafetyIndex.value)
@@ -128,6 +132,7 @@ const filteredInfoTable = computed(() => infoTable.value.filter(shouldDisplay));
     <el-main>
       <el-card class="lg:mx-12 lg:px-6 px-3">
         <el-row :gutter="24">
+          <!-- To query which region to travel -->
           <div class="m-2 flex-row">
             <span class="<md:block w-10 align-middle">地區</span>
             <el-select clearable class="w-55 mx-2" v-model="region" placeholder="請選擇你希望旅遊的區域">
@@ -138,6 +143,7 @@ const filteredInfoTable = computed(() => infoTable.value.filter(shouldDisplay));
               ></el-option>
             </el-select>
           </div>
+          <!-- To query those country at least `requiredSafetyIndex` safety index -->
           <div class="m-2 flex-row">
             <span class="<md:block w-30 md:ml-3 mr-6 text-left">治安等級大於 {{ requiredSafetyIndex }}</span>
             <el-slider class="w-40 inline-flex align-middle" v-model="requiredSafetyIndex"></el-slider>

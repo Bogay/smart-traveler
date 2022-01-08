@@ -6,6 +6,11 @@ from urllib.parse import urljoin
 
 
 def get_live_exchangerate():
+    ''' 
+	Find abbr. of currencies and Spot/Cash selling rate
+	(priority of exchange rate: Spot/Cash selling rate)
+	Save them to dictionary live_exchangerates: <abbr. of currencies>(str): <exchange rate>(float)
+	'''
     currencies = []
     currencies_abbr = []
     spot_sell_rates = []
@@ -17,11 +22,6 @@ def get_live_exchangerate():
     url = 'https://rate.bot.com.tw/xrt?Lang=en-US'
     re = requests.get(url, verify=False)
     soup = BeautifulSoup(re.text, 'html.parser')
-    ''' 
-	Find abbr. of currencies and Spot/Cash selling rate
-	(priority of exchange rate: Spot/Cash selling rate)
-	Save them to dictionary live_exchangerates: <abbr. of currencies>(str): <exchange rate>(float)
-	'''
     # find currencies
     table = soup.find('tbody')
     trs = table.find_all('tr')
@@ -60,6 +60,7 @@ def get_live_exchangerate():
 
 
 def abbr_currency_to_country(live_exchange_rates):
+    ''' Get Countries by abbr. of currencies '''
     countries = {}  # abbr_currency: country
     target_countries = {}
     ''' Request '''
@@ -67,7 +68,6 @@ def abbr_currency_to_country(live_exchange_rates):
     url = 'https://www.easymarkets.com/int/learn-centre/discover-trading/currency-acronyms-and-abbreviations/'
     re = requests.get(url, verify=False)
     soup = BeautifulSoup(re.text, 'html.parser')
-    ''' Get Countries by abbr. of currencies '''
     # Get all countries and their abbr. of currencies
     table = soup.find('table', {'class': 'table table-striped table-hover'})
     table = soup.find('tbody')
@@ -92,6 +92,7 @@ def abbr_currency_to_country(live_exchange_rates):
 
 
 def get_avg_exchangerate(countries):
+    ''' For every country, calculate average exchange rate '''
     avg_exchangerates = {}
     avg_NTD_to_USD = 0
     ''' Request '''
@@ -101,7 +102,6 @@ def get_avg_exchangerate(countries):
     year = str(date.year - 20)
     '''Change USA to Taiwan'''
     countries['USD'] = 'Taiwan'
-    ''' For every country, calculate average exchange rate '''
     for abbr_currency, country in countries.items():
         rate_sum = 0
         rate_num = 0
@@ -133,8 +133,11 @@ def get_avg_exchangerate(countries):
 
 
 def get_per_exchangerate(live_exchangerates, avg_exchangerates):
+    '''
+    Calculate percentage of rise of fall in exchange rate:
+    (live_exchangerate - avg_exchangerate) / avg_exchangerate * 100%
+    '''
     per_exchangerates = {}
-    ''' Calculate percentage of rise of fall in exchange rate: (live_exchangerate - avg_exchangerate) / avg_exchangerate x 100 % '''
     for abbr_currency, live_exchangerate in live_exchangerates.items():
         avg_exchangerate = avg_exchangerates[abbr_currency]
         per_exchangerate = round(
@@ -193,7 +196,6 @@ def get_crime_safety_index(countries):
     return crime_safety_indexes
 
 
-''' Main '''
 country_data = {}
 
 
@@ -201,8 +203,10 @@ def process_data():
     live_exchangerates = get_live_exchangerate()
     countries = abbr_currency_to_country(live_exchangerates)
     avg_exchangerates = get_avg_exchangerate(countries)
-    per_exchangerates = get_per_exchangerate(live_exchangerates,
-                                             avg_exchangerates)
+    per_exchangerates = get_per_exchangerate(
+        live_exchangerates,
+        avg_exchangerates,
+    )
     sort_per_exchangerates = sort_per_exchangerate(per_exchangerates)
     crime_safety_indexes = get_crime_safety_index(countries)
 
@@ -219,5 +223,4 @@ def process_data():
 
 
 if __name__ == '__main__':
-    process_data()
-    print([*country_data.keys()])
+    print(process_data())

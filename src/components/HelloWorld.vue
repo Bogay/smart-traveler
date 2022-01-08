@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed, reactive, unref } from "vue";
 import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
 
@@ -45,7 +45,7 @@ const countrys = [
   'Switzerland',
 ];
 
-let infos: { [k: string]: CountryInfo } = {};
+let infos: { [k: string]: CountryInfo } = reactive({});
 
 async function getInfo(country: string) {
   const params = new URLSearchParams({ country });
@@ -76,10 +76,16 @@ onMounted(async () => {
       }
       infos[c] = info;
     }
-    await sleep(5);
+    await sleep(5000);
   } while (!ready);
   console.log('Fectch done.');
 });
+
+const infoTable = computed(() => Object.entries(infos).map(([c, info]) => ({ country: c, ...info })));
+
+function debug() {
+  console.log(infoTable.value);
+}
 </script>
 
 <template>
@@ -110,9 +116,14 @@ onMounted(async () => {
             class="m-2"
             :icon="Search"
             type="success"
-            @click="getInfo('Taiwan')"
+            @click="debug"
           >搜尋</el-button>
         </el-row>
+        <el-table :data="infoTable" style="width: 100%">
+          <el-table-column prop="country" label="Date" width="180" />
+          <el-table-column prop="liveExchangerates" label="Name" width="180" />
+          <el-table-column prop="avgExchangerates" label="Address" />
+        </el-table>
       </el-card>
     </el-main>
   </el-container>

@@ -1,11 +1,9 @@
 <template>
-  <!-- <BaseHeader /> -->
-  <HelloWorld msg="Hello Vue 3.0 + Element Plus + Vite" />
+  <Main />
 </template>
 
 <script setup lang="ts">
-import BaseHeader from "./components/layouts/BaseHeader.vue";
-import HelloWorld from "./components/HelloWorld.vue";
+import Main from "./components/Main.vue";
 </script>
 
 <style>

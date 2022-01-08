@@ -2,10 +2,6 @@
 import { onMounted, ref, computed, reactive } from "vue";
 import { ElMessage } from 'element-plus'
 
-defineProps<{
-  msg: string
-}>();
-
 interface CountryInfo {
   liveExchangerates: number;
   avgExchangerates: number;

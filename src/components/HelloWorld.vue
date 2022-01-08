@@ -82,10 +82,7 @@ onMounted(async () => {
 });
 
 const infoTable = computed(() => Object.entries(infos).map(([c, info]) => ({ country: c, ...info })));
-
-function debug() {
-  console.log(infoTable.value);
-}
+const filteredInfoTable = computed(() => infoTable.value.filter(info => info.safetyIndex >= safetyLevel.value));
 </script>
 
 <template>
@@ -107,15 +104,10 @@ function debug() {
             <span class="<md:block w-30 md:ml-3 mr-6 text-left">治安等級大於 {{ safetyLevel }}</span>
             <el-slider class="w-40 inline-flex align-middle" v-model="safetyLevel"></el-slider>
           </div>
-          <el-button
-            style="block-size: fit-content"
-            class="m-2"
-            :icon="Search"
-            type="success"
-            @click="debug"
-          >搜尋</el-button>
+          <div class="lg:flex-grow <lg:w-full"></div>
+          <el-button style="block-size: fit-content" class="m-2" :icon="Search" type="success">搜尋</el-button>
         </el-row>
-        <el-table :data="infoTable" style="width: 100%">
+        <el-table :data="filteredInfoTable" style="width: 100%">
           <el-table-column prop="country" label="國家 / 地區" />
           <el-table-column prop="liveExchangerates" label="即時匯率" />
           <el-table-column prop="avgExchangerates" label="平均匯率" />

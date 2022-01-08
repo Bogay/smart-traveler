@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref, computed, reactive, unref } from "vue";
+import { onMounted, ref, computed, reactive } from "vue";
 import { ElMessage } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
 
 defineProps<{
   msg: string
@@ -19,8 +18,8 @@ let bucket = ref(0);
 let requiredSafetyIndex = ref(0);
 let region = ref('');
 
-const toast = () => {
-  ElMessage.success('Hello')
+const toast = (msg: string) => {
+  ElMessage.success(msg)
 }
 
 const countrys = [
@@ -111,7 +110,7 @@ onMounted(async () => {
     }
     await sleep(5000);
   } while (!ready);
-  console.log('Fectch done.');
+  toast('Fectch done.');
 });
 
 function shouldDisplay(info: CountryInfo & { country: string }) {
